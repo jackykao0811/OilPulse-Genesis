@@ -1,0 +1,10 @@
+{
+  "schema": "G26-SOV",
+  "app_name": "OilPulse 精油脈動",
+  "constraints": {
+    "total_oils": 120,
+    "min_match": 6,
+    "states": ["焦慮不安","睡不好","疲倦無力","頭部緊繃","肌肉痠痛","消化不適","注意力渙散","情緒低落","壓力大","呼吸不順","肌膚困擾","想放鬆"]
+  },
+  "idempotency_key": "oilpulse_init_v1"
+}
