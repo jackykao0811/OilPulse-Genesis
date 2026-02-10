@@ -1,0 +1,24 @@
+# Genesis 2.6 專案憲法
+
+## 多租戶隔離（Org Isolation）
+
+- 所有資料存取、API 呼叫、Firebase 操作必須以 `org_id` 或等效租戶識別為命名空間。
+- 前端狀態、localStorage、Session 鍵值必須包含租戶前綴（例：`{orgId}_prescription_cache`）。
+- 後端／Cloud Functions 必須於每次請求驗證並限定於該租戶資源，禁止跨租戶查詢或寫入。
+- 環境變數與設定檔中敏感租戶資料不得硬編碼，須由執行環境或密鑰管理注入。
+
+## 冪等性（Idempotency）
+
+- 會產生副作用的操作（建立處方、寫入資料、觸發 PDF 導出）必須接受並處理冪等鍵（idempotency key）。
+- 同一冪等鍵在有效時間窗內重複請求須回傳相同結果，不重複執行副作用。
+- 前端對「送出處方」「導出 PDF」等動作應生成並傳遞唯一 idempotency key（如 UUID v4），並在重試時重用同一 key。
+
+## 視覺標準（Noto Serif TC）
+
+- 全站主要字型為 **Noto Serif TC**（思源宋體繁體），用於標題、內文及處方箋卡片以維持醫師專業簽章美感。
+- 透過 Google Fonts 引入：`https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;600;700&display=swap`
+- CSS 預設：`font-family: 'Noto Serif TC', serif;`
+- 處方箋、簽章區、法律或醫療聲明文字一律使用 Noto Serif TC，不得替換為無襯線體。
+
+---
+*高堯楷醫師｜Genesis 2.6*
