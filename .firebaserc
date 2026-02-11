@@ -1,5 +1,12 @@
 {
   "projects": {
     "default": "oilpluse-cb370"
+  },
+  "targets": {
+    "oilpluse-cb370": {
+      "hosting": {
+        "default": ["oilpluse-cb370"]
+      }
+    }
   }
 }

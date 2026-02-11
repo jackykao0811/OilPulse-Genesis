@@ -1,1 +1,47 @@
-{"version":"2.6","schema":{"orgId":"string","requestId":"uuid","payload":"object"}}
+{
+  "version": "2.6",
+  "schema": {
+    "physicianConfig": {
+      "styleTags": "array",
+      "bookingUrl": "string"
+    },
+    "subscribers": {
+      "email": "string",
+      "source": "string"
+    },
+    "newsletters": {
+      "content": "string",
+      "clicks": "number"
+    },
+    "Newsletter_Campaigns": {
+      "id": "string",
+      "org_id": "string",
+      "title": "string",
+      "body": "string",
+      "cta_url": "string",
+      "cta_label": "string",
+      "created_at": "timestamp",
+      "updated_at": "timestamp"
+    },
+    "Conversion_Logs": {
+      "id": "string",
+      "org_id": "string",
+      "tracking_id": "string",
+      "campaign_id": "string",
+      "type": "open | click",
+      "created_at": "timestamp"
+    },
+    "tracking_links": {
+      "tracking_id": "string",
+      "org_id": "string",
+      "campaign_id": "string",
+      "target_url": "string",
+      "created_at": "timestamp"
+    }
+  },
+  "collections": {
+    "newsletter_campaigns": "orgs/{org_id}/newsletter_campaigns",
+    "conversion_logs": "orgs/{org_id}/conversion_logs",
+    "tracking_links": "orgs/{org_id}/tracking_links"
+  }
+}
