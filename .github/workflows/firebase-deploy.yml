@@ -1,40 +1,36 @@
-# Genesis 2.6 全自動部署工廠
-# push 到 main 時：建置 client → 部署至 Firebase Hosting (oilpluse-cb370)
-#
-# 必要 GitHub Secrets（Settings → Secrets and variables → Actions）：
-#   - REACT_APP_FIREBASE_API_KEY：Firebase Console 專案設定中的 API Key（解決 auth/invalid-api-key）
-#   - FIREBASE_TOKEN：本機執行 firebase login:ci 產生的 CI 用 token，貼到 Secrets 命名為 FIREBASE_TOKEN
-# 選填：REACT_APP_FIREBASE_APP_ID、REACT_APP_FIREBASE_MESSAGING_SENDER_ID
-
-name: Firebase Deploy
-
+name: HeTu Genesis Auto-Deploy
 on:
   push:
-    branches: [main]
-
+    branches: [ main ]
 jobs:
-  build-and-deploy:
+  build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup Node
+        uses: actions/setup-node@v3
         with:
-          node-version: '20'
+          node-version: 18
           cache: 'npm'
+          # 關鍵校準：告訴機器人 lock 檔案在 client 裡 [cite: 2026-02-12]
           cache-dependency-path: client/package-lock.json
 
-      - name: Install dependencies and build
-        working-directory: client
+      - name: Install and Build
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
-          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
-          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
+        # 關鍵校準：強制在 client 資料夾執行 [cite: 2026-02-12]
         run: |
-          npm ci
+          npm install
           npm run build
+        working-directory: client
 
-      - name: Deploy to Firebase Hosting (oilpluse-cb370)
-        run: npx firebase-tools deploy --only hosting --token "${{ secrets.FIREBASE_TOKEN }}"
+      - name: Deploy to Firebase
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_OILPLUSE_CB370 }}'
+          channelId: live
+          # 關鍵校準：部署 client 資料夾下的產物 [cite: 2026-02-12]
+          entryPoint: client
+          projectId: oilpluse-cb370
