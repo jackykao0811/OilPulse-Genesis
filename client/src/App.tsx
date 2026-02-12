@@ -8,6 +8,9 @@ import ProfilePage from './pages/ProfilePage';
 import AudiencePage from './pages/AudiencePage';
 import Dashboard from './pages/Dashboard';
 import EditorPage from './pages/EditorPage';
+import { ClinicProvider } from './context/ClinicContext';
+import ClinicLayout from './layouts/ClinicLayout';
+import ClinicDashboard from './pages/doctor/ClinicDashboard';
 import masterConfig from './MasterConfig.json';
 
 const GOLD = '#D4AF37';
@@ -107,7 +110,8 @@ function MainDashboard() {
           </div>
           <p className="text-xs uppercase tracking-tight mb-2" style={{ color: ZINC, opacity: 0.8 }}>狀態</p>
           <p className="text-sm font-medium mb-4" style={{ color: ZINC }}>待機中</p>
-          <p className="text-sm" style={{ color: ZINC }}>多租戶管理系統</p>
+          <p className="text-sm mb-4" style={{ color: ZINC }}>多租戶管理系統</p>
+          <Link to="/clinic" className="text-sm underline" style={{ color: GOLD }}>進入 Clinic OS →</Link>
         </article>
       </section>
 
@@ -212,6 +216,9 @@ export default function App() {
             <Route path="/audience" element={<AudiencePage />} />
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/editor" element={<EditorPage />} />
+            <Route path="/clinic" element={<ClinicProvider><ClinicLayout /></ClinicProvider>}>
+              <Route index element={<ClinicDashboard />} />
+            </Route>
           </Routes>
         </div>
       </BrowserRouter>
