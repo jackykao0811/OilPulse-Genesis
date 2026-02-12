@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from './core/hetu/auth/AuthContext';
 import { ProfileProvider } from './context/ProfileContext';
 import LoginPage from './LoginPage';
@@ -11,7 +11,23 @@ import EditorPage from './pages/EditorPage';
 import { ClinicProvider } from './context/ClinicContext';
 import ClinicLayout from './layouts/ClinicLayout';
 import ClinicDashboard from './pages/doctor/ClinicDashboard';
+import OnboardingPage from './pages/onboarding/OnboardingPage';
+import StatusPage from './pages/onboarding/StatusPage';
 import masterConfig from './MasterConfig.json';
+
+function AuthRouteGuard({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const { user, hasClinicId, isAdmin } = useAuth();
+  if (!user) return <>{children}</>;
+  const path = location.pathname;
+  if (!isAdmin && !hasClinicId && path !== '/onboarding' && path !== '/status') {
+    return <Navigate to="/onboarding" replace />;
+  }
+  if ((hasClinicId || isAdmin) && path === '/onboarding') {
+    return <Navigate to="/clinic" replace />;
+  }
+  return <>{children}</>;
+}
 
 const GOLD = '#D4AF37';
 const ZINC = '#a1a1aa';
@@ -174,15 +190,18 @@ export default function App() {
   return (
     <ProfileProvider>
       <BrowserRouter>
-        <div
-          className="min-h-screen flex flex-col items-center justify-start pt-12 pb-12 px-6"
-          style={{
-            background: BG,
-            color: ZINC,
-            backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 50%, rgba(212, 175, 55, 0.06), transparent)',
-          }}
-        >
-          <Routes>
+        <AuthRouteGuard>
+          <div
+            className="min-h-screen flex flex-col items-center justify-start pt-12 pb-12 px-6"
+            style={{
+              background: BG,
+              color: ZINC,
+              backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 50%, rgba(212, 175, 55, 0.06), transparent)',
+            }}
+          >
+            <Routes>
+            <Route path="/onboarding" element={<OnboardingPage />} />
+            <Route path="/status" element={<StatusPage />} />
             <Route
               path="/"
               element={
@@ -221,6 +240,7 @@ export default function App() {
             </Route>
           </Routes>
         </div>
+        </AuthRouteGuard>
       </BrowserRouter>
     </ProfileProvider>
   );

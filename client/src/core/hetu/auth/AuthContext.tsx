@@ -24,6 +24,8 @@ export interface AuthState {
   orgId: string | null;
   loading: boolean;
   error: string | null;
+  hasClinicId: boolean;
+  isAdmin: boolean;
 }
 
 type AuthActions = {
@@ -46,6 +48,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [orgId, setOrgId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [hasClinicId, setHasClinicId] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const refetchOrg = async () => {
     if (!user) return;
@@ -73,16 +77,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setError(null);
       if (!u) {
         setOrgId(null);
+        setHasClinicId(false);
+        setIsAdmin(false);
         setLoading(false);
         return;
       }
       try {
+        const token = await u.getIdTokenResult();
+        const claimRole = (token.claims.role as string) === 'admin';
+        setIsAdmin(claimRole);
         const res = await ensureOrgForUser();
         const data = res.data as { org_id?: string };
-        setOrgId(data?.org_id ?? null);
+        const nextOrgId = data?.org_id ?? null;
+        setOrgId(nextOrgId);
+        const claimClinicId = !!token.claims.clinicId;
+        setHasClinicId(claimClinicId || !!nextOrgId);
       } catch (e) {
         setError((e as Error).message);
         setOrgId(null);
+        setHasClinicId(false);
       } finally {
         setLoading(false);
       }
@@ -136,6 +149,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         orgId,
         loading,
         error,
+        hasClinicId,
+        isAdmin,
         signInWithGoogle,
         signInWithEmail,
         signUpWithEmail,
