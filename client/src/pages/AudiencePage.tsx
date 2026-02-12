@@ -38,7 +38,7 @@ export default function AudiencePage() {
   const handleFile = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    Papa.parse<Record<string, string>>(file, {
+    Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
       complete: (res) => {
