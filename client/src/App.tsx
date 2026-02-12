@@ -1,8 +1,13 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useAuth } from './core/hetu/auth/AuthContext';
+import { ProfileProvider } from './context/ProfileContext';
 import LoginPage from './LoginPage';
 import SentinelPage from './pages/SentinelPage';
+import ProfilePage from './pages/ProfilePage';
+import AudiencePage from './pages/AudiencePage';
+import Dashboard from './pages/Dashboard';
+import EditorPage from './pages/EditorPage';
 import masterConfig from './MasterConfig.json';
 
 const GOLD = '#D4AF37';
@@ -106,6 +111,33 @@ function MainDashboard() {
         </article>
       </section>
 
+      {/* 電子報生態閉環入口 */}
+      <section className="mb-20">
+        <h2 className="text-sm font-mono tracking-wider mb-6 text-center" style={{ color: GOLD }}>電子報生態閉環</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Link to="/profile" className="glass rounded-2xl p-5 text-left block opacity-0 animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'forwards', color: ZINC, textDecoration: 'none' }}>
+            <span className="text-lg mb-2 block">⚙️</span>
+            <span className="font-medium" style={{ color: GOLD }}>醫師設定檔</span>
+            <p className="text-xs mt-1" style={{ opacity: 0.8 }}>clinicName · bookingUrl · 簽名檔</p>
+          </Link>
+          <Link to="/audience" className="glass rounded-2xl p-5 text-left block opacity-0 animate-fade-in-up" style={{ animationDelay: '0.55s', animationFillMode: 'forwards', color: ZINC, textDecoration: 'none' }}>
+            <span className="text-lg mb-2 block">📋</span>
+            <span className="font-medium" style={{ color: GOLD }}>名單金庫</span>
+            <p className="text-xs mt-1" style={{ opacity: 0.8 }}>CSV 導入 / 導出 · 病患列表</p>
+          </Link>
+          <Link to="/dashboard" className="glass rounded-2xl p-5 text-left block opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards', color: ZINC, textDecoration: 'none' }}>
+            <span className="text-lg mb-2 block">📊</span>
+            <span className="font-medium" style={{ color: GOLD }}>轉換漏斗</span>
+            <p className="text-xs mt-1" style={{ opacity: 0.8 }}>Sent → Opened → Clicked → Converted</p>
+          </Link>
+          <Link to="/editor" className="glass rounded-2xl p-5 text-left block opacity-0 animate-fade-in-up" style={{ animationDelay: '0.65s', animationFillMode: 'forwards', color: ZINC, textDecoration: 'none' }}>
+            <span className="text-lg mb-2 block">✏️</span>
+            <span className="font-medium" style={{ color: GOLD }}>編輯器</span>
+            <p className="text-xs mt-1" style={{ opacity: 0.8 }}>Smart Blocks · 模組組裝</p>
+          </Link>
+        </div>
+      </section>
+
       <footer
         className="opacity-0 animate-fade-in-up text-sm"
         style={{ animationDelay: '0.8s', animationFillMode: 'forwards', color: ZINC, opacity: 0.7 }}
@@ -136,47 +168,53 @@ export default function App() {
   }
 
   return (
-    <BrowserRouter>
-      <div
-        className="min-h-screen flex flex-col items-center justify-start pt-12 pb-12 px-6"
-        style={{
-          background: BG,
-          color: ZINC,
-          backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 50%, rgba(212, 175, 55, 0.06), transparent)',
-        }}
-      >
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <header className="w-full max-w-4xl flex justify-between items-center mb-10">
-                  <p style={{ fontFamily: '"Noto Serif TC", serif', color: GOLD, fontSize: 18 }}>
-                    歡迎，{user.email ?? user.displayName ?? '使用者'}
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => signOut()}
-                    className="py-2 px-4 rounded-lg text-sm"
-                    style={{
-                      border: '1px solid rgba(212, 175, 55, 0.5)',
-                      color: GOLD,
-                      background: 'transparent',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    登出
-                  </button>
-                </header>
-                <main className="max-w-4xl w-full text-center">
-                  <MainDashboard />
-                </main>
-              </>
-            }
-          />
-          <Route path="/sentinel" element={<SentinelPage />} />
-        </Routes>
-      </div>
-    </BrowserRouter>
+    <ProfileProvider>
+      <BrowserRouter>
+        <div
+          className="min-h-screen flex flex-col items-center justify-start pt-12 pb-12 px-6"
+          style={{
+            background: BG,
+            color: ZINC,
+            backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 50%, rgba(212, 175, 55, 0.06), transparent)',
+          }}
+        >
+          <Routes>
+            <Route
+              path="/"
+              element={
+                <>
+                  <header className="w-full max-w-4xl flex justify-between items-center mb-10">
+                    <p style={{ fontFamily: '"Noto Serif TC", serif', color: GOLD, fontSize: 18 }}>
+                      歡迎，{user.email ?? user.displayName ?? '使用者'}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => signOut()}
+                      className="py-2 px-4 rounded-lg text-sm"
+                      style={{
+                        border: '1px solid rgba(212, 175, 55, 0.5)',
+                        color: GOLD,
+                        background: 'transparent',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      登出
+                    </button>
+                  </header>
+                  <main className="max-w-4xl w-full text-center">
+                    <MainDashboard />
+                  </main>
+                </>
+              }
+            />
+            <Route path="/sentinel" element={<SentinelPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/audience" element={<AudiencePage />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/editor" element={<EditorPage />} />
+          </Routes>
+        </div>
+      </BrowserRouter>
+    </ProfileProvider>
   );
 }

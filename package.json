@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "@types/papaparse": "^5.5.2",
+    "papaparse": "^5.5.3",
+    "recharts": "^3.7.0"
+  }
+}
