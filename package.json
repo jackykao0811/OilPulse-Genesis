@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "build": "cd client && npm run build",
+    "ship": "git add . && (git commit -m \"auto save by commander\" || true) && git push && npm run build && firebase deploy"
+  },
   "dependencies": {
     "papaparse": "^5.5.3",
     "recharts": "^3.7.0"

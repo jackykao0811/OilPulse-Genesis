@@ -29,26 +29,26 @@ export default function LandingPage() {
         style={{ animationDelay: '0.35s', animationFillMode: 'forwards' }}
       >
         <Link
-          to="/apply"
+          to="/clinic"
           className="py-8 px-6 text-center rounded-lg border transition-all duration-300 hover:shadow-[0_0_24px_rgba(212,175,55,0.25)]"
           style={{ borderColor: 'rgba(212,175,55,0.3)', color: GOLD }}
         >
           <span className="text-sm font-medium tracking-widest">[ CLINIC OS ]</span>
         </Link>
-        <a
-          href="/research"
+        <Link
+          to="/sentinel"
           className="py-8 px-6 text-center rounded-lg border transition-all duration-300 hover:shadow-[0_0_24px_rgba(212,175,55,0.25)]"
           style={{ borderColor: 'rgba(212,175,55,0.3)', color: GOLD }}
         >
           <span className="text-sm font-medium tracking-widest">[ SENTINEL ]</span>
-        </a>
-        <a
-          href="/blog"
+        </Link>
+        <Link
+          to="/academy"
           className="py-8 px-6 text-center rounded-lg border transition-all duration-300 hover:shadow-[0_0_24px_rgba(212,175,55,0.25)]"
           style={{ borderColor: 'rgba(212,175,55,0.3)', color: GOLD }}
         >
           <span className="text-sm font-medium tracking-widest">[ ACADEMY ]</span>
-        </a>
+        </Link>
       </section>
 
       {/* Footer - Fixed bottom, OilPulse 訂閱框 */}
