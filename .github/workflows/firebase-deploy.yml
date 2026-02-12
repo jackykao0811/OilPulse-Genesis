@@ -1,6 +1,5 @@
-# 河圖公司首頁全量部署 (Genesis 2.6)
-# 修復部署病灶：cd client、entryPoint: client，解決 exit code 128
-# Firebase 鎖定 projectId: oilpluse-cb370
+# 全自動修復部署腳本 (Genesis 2.6)
+# fetch-depth: 0 解決失憶症 | cache-dependency-path 解決鎖路徑 | entryPoint: client
 
 name: HeTu Genesis Auto-Deploy
 
@@ -12,9 +11,10 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # 關鍵修正：完整歷史記憶，修復部署失憶症
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -23,17 +23,17 @@ jobs:
           cache: 'npm'
           cache-dependency-path: client/package-lock.json
 
-      - name: Install and Build (cd client)
+      - name: Install and Build
+        working-directory: client
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
           REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
           REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
         run: |
-          cd client
           npm install
           npm run build
 
-      - name: Deploy to Firebase Hosting (oilpluse-cb370)
+      - name: Deploy to Firebase Hosting
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
