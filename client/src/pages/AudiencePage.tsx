@@ -41,8 +41,8 @@ export default function AudiencePage() {
     Papa.parse(file, {
       header: true,
       skipEmptyLines: true,
-      complete: (res) => {
-        const rows = (res.data || []).map((r) => ({
+      complete: (res: any) => {
+        const rows = (res.data || []).map((r: any) => ({
           name: r.name ?? r.Name ?? r.姓名 ?? '',
           email: r.email ?? r.Email ?? r.信箱 ?? '',
           tags: r.tags ?? r.Tags ?? r.標籤 ?? '',
