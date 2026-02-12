@@ -1,0 +1,39 @@
+{
+  "$schema": "G26-HeTu",
+  "version": "1.0.0",
+  "default_org_id": "default_org",
+  "domain_packs": {
+    "clinic": {
+      "id": "clinic",
+      "name": "診所",
+      "description": "診所業務邏輯：醫師風格、預約掛號、處方箋",
+      "org_ids": ["jacky_clinic", "default_org"],
+      "features": {
+        "physician_style_feed": true,
+        "booking_url": true,
+        "prescription_card": true
+      },
+      "firestore_paths": {
+        "config": "orgs/{org_id}/config/physician",
+        "prescription_logs": "orgs/{org_id}/prescription_logs"
+      }
+    },
+    "sentinel": {
+      "id": "sentinel",
+      "name": "SENTINEL",
+      "description": "哨兵邏輯：監控、稽核、冪等性守衛",
+      "org_ids": ["*"],
+      "features": {
+        "idempotency_guard": true,
+        "audit_log": true
+      },
+      "firestore_paths": {
+        "audit": "orgs/{org_id}/sentinel/audit"
+      }
+    }
+  },
+  "api": {
+    "pulse_match": "https://us-central1-oilpluse-cb370.cloudfunctions.net/getPulseMatch",
+    "export_pdf": "https://us-central1-oilpluse-cb370.cloudfunctions.net/exportPrescriptionToPdf"
+  }
+}
