@@ -3,6 +3,8 @@ import {
   onAuthStateChanged,
   signInWithPopup,
   GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   User,
 } from 'firebase/auth';
@@ -24,7 +26,14 @@ export interface AuthState {
   error: string | null;
 }
 
-const AuthContext = createContext<AuthState & { signInWithGoogle: () => Promise<void>; signOut: () => Promise<void>; refetchOrg: () => Promise<void> }>(null as unknown as AuthState & { signInWithGoogle: () => Promise<void>; signOut: () => Promise<void>; refetchOrg: () => Promise<void> });
+type AuthActions = {
+  signInWithGoogle: () => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
+  signUpWithEmail: (email: string, password: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  refetchOrg: () => Promise<void>;
+};
+const AuthContext = createContext<AuthState & AuthActions>(null as unknown as AuthState & AuthActions);
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
@@ -91,6 +100,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const signInWithEmail = async (email: string, password: string) => {
+    setError(null);
+    try {
+      await signInWithEmailAndPassword(auth!, email.trim(), password);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
+  const signUpWithEmail = async (email: string, password: string) => {
+    setError(null);
+    try {
+      await createUserWithEmailAndPassword(auth!, email.trim(), password);
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  };
+
   const signOut = async () => {
     if (auth) {
       await firebaseSignOut(auth);
@@ -110,6 +137,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         error,
         signInWithGoogle,
+        signInWithEmail,
+        signUpWithEmail,
         signOut,
         refetchOrg,
       }}
