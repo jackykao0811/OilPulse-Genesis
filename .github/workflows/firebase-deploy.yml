@@ -21,7 +21,7 @@ jobs:
         with:
           node-version: 18
           cache: 'npm'
-          cache-dependency-path: client/package-lock.json
+          cache-dependency-path: client/package-lock.json   # 強制：鎖檔在 client/，不加會導致部署失敗
 
       - name: Install and Build
         working-directory: client
