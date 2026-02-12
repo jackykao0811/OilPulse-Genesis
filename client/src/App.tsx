@@ -1,6 +1,8 @@
 import React, { useEffect } from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useAuth } from './core/hetu/auth/AuthContext';
 import LoginPage from './LoginPage';
+import SentinelPage from './pages/SentinelPage';
 import masterConfig from './MasterConfig.json';
 
 const GOLD = '#D4AF37';
@@ -71,7 +73,10 @@ function MainDashboard() {
           <p className="text-xs uppercase tracking-tight mb-2" style={{ color: ZINC, opacity: 0.8 }}>狀態</p>
           <p className="text-sm font-medium mb-4" style={{ color: GOLD }}>運作中</p>
           <p className="text-sm mb-3" style={{ color: ZINC }}>{masterConfig.sentinel?.description || '哨兵邏輯：監控、稽核、冪等性守衛'}</p>
-          <div className="text-2xl font-mono" style={{ color: GOLD }}>RESONANCE: {resonance}</div>
+          <div className="text-2xl font-mono mb-4" style={{ color: GOLD }}>RESONANCE: {resonance}</div>
+          <Link to="/sentinel" className="text-sm underline" style={{ color: GOLD }}>
+            進入 SENTINEL 運算介面 →
+          </Link>
         </article>
 
         <article
@@ -131,35 +136,47 @@ export default function App() {
   }
 
   return (
-    <div
-      className="min-h-screen flex flex-col items-center justify-start pt-12 pb-12 px-6"
-      style={{
-        background: BG,
-        color: ZINC,
-        backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 50%, rgba(212, 175, 55, 0.06), transparent)',
-      }}
-    >
-      <header className="w-full max-w-4xl flex justify-between items-center mb-10">
-        <p style={{ fontFamily: '"Noto Serif TC", serif', color: GOLD, fontSize: 18 }}>
-          歡迎，{user.email ?? user.displayName ?? '使用者'}
-        </p>
-        <button
-          type="button"
-          onClick={() => signOut()}
-          className="py-2 px-4 rounded-lg text-sm"
-          style={{
-            border: '1px solid rgba(212, 175, 55, 0.5)',
-            color: GOLD,
-            background: 'transparent',
-            cursor: 'pointer',
-          }}
-        >
-          登出
-        </button>
-      </header>
-      <main className="max-w-4xl w-full text-center">
-        <MainDashboard />
-      </main>
-    </div>
+    <BrowserRouter>
+      <div
+        className="min-h-screen flex flex-col items-center justify-start pt-12 pb-12 px-6"
+        style={{
+          background: BG,
+          color: ZINC,
+          backgroundImage: 'radial-gradient(ellipse 80% 50% at 50% -20%, rgba(212, 175, 55, 0.15), transparent), radial-gradient(ellipse 60% 40% at 80% 50%, rgba(212, 175, 55, 0.06), transparent)',
+        }}
+      >
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <>
+                <header className="w-full max-w-4xl flex justify-between items-center mb-10">
+                  <p style={{ fontFamily: '"Noto Serif TC", serif', color: GOLD, fontSize: 18 }}>
+                    歡迎，{user.email ?? user.displayName ?? '使用者'}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => signOut()}
+                    className="py-2 px-4 rounded-lg text-sm"
+                    style={{
+                      border: '1px solid rgba(212, 175, 55, 0.5)',
+                      color: GOLD,
+                      background: 'transparent',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    登出
+                  </button>
+                </header>
+                <main className="max-w-4xl w-full text-center">
+                  <MainDashboard />
+                </main>
+              </>
+            }
+          />
+          <Route path="/sentinel" element={<SentinelPage />} />
+        </Routes>
+      </div>
+    </BrowserRouter>
   );
 }
