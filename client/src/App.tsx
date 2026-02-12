@@ -14,6 +14,7 @@ import ClinicDashboard from './pages/doctor/ClinicDashboard';
 import OnboardingPage from './pages/onboarding/OnboardingPage';
 import StatusPage from './pages/onboarding/StatusPage';
 import VipPage from './pages/vip/VipPage';
+import LandingPage from './views/LandingPage';
 import masterConfig from './MasterConfig.json';
 
 function AuthRouteGuard({ children }: { children: React.ReactNode }) {
@@ -21,7 +22,7 @@ function AuthRouteGuard({ children }: { children: React.ReactNode }) {
   const { user, hasClinicId, isAdmin } = useAuth();
   if (!user) return <>{children}</>;
   const path = location.pathname;
-  if (!isAdmin && !hasClinicId && path !== '/onboarding' && path !== '/status' && path !== '/vip') {
+  if (!isAdmin && !hasClinicId && path !== '/' && path !== '/onboarding' && path !== '/status' && path !== '/vip') {
     return <Navigate to="/onboarding" replace />;
   }
   if ((hasClinicId || isAdmin) && path === '/onboarding') {
@@ -201,10 +202,11 @@ export default function App() {
             }}
           >
             <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route path="/onboarding" element={<OnboardingPage />} />
             <Route path="/status" element={<StatusPage />} />
             <Route
-              path="/"
+              path="/apply"
               element={
                 <>
                   <header className="w-full max-w-4xl flex justify-between items-center mb-10">
