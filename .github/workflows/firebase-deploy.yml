@@ -1,36 +1,41 @@
+# 河圖公司首頁全量部署 (Genesis 2.6)
+# 修復部署病灶：cd client、entryPoint: client，解決 exit code 128
+# Firebase 鎖定 projectId: oilpluse-cb370
+
 name: HeTu Genesis Auto-Deploy
+
 on:
   push:
-    branches: [ main ]
+    branches: [main]
+
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: 'npm'
-          # 關鍵校準：告訴機器人 lock 檔案在 client 裡 [cite: 2026-02-12]
           cache-dependency-path: client/package-lock.json
 
-      - name: Install and Build
+      - name: Install and Build (cd client)
         env:
           REACT_APP_FIREBASE_API_KEY: ${{ secrets.REACT_APP_FIREBASE_API_KEY }}
-        # 關鍵校準：強制在 client 資料夾執行 [cite: 2026-02-12]
+          REACT_APP_FIREBASE_APP_ID: ${{ secrets.REACT_APP_FIREBASE_APP_ID }}
+          REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${{ secrets.REACT_APP_FIREBASE_MESSAGING_SENDER_ID }}
         run: |
+          cd client
           npm install
           npm run build
-        working-directory: client
 
-      - name: Deploy to Firebase
+      - name: Deploy to Firebase Hosting (oilpluse-cb370)
         uses: FirebaseExtended/action-hosting-deploy@v0
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_OILPLUSE_CB370 }}'
-          channelId: live
-          # 關鍵校準：部署 client 資料夾下的產物 [cite: 2026-02-12]
-          entryPoint: client
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_OILPLUSE_CB370 }}
           projectId: oilpluse-cb370
+          channelId: live
+          entryPoint: client
