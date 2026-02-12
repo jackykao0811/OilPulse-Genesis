@@ -1,5 +1,5 @@
 # 全自動修復部署腳本 (Genesis 2.6)
-# fetch-depth: 0 解決失憶症 | cache-dependency-path 解決鎖路徑 | entryPoint: client
+# fetch-depth: 0 解決失憶症 | entryPoint: client
 
 name: HeTu Genesis Auto-Deploy
 
@@ -20,8 +20,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18
-          cache: 'npm'
-          cache-dependency-path: client/package-lock.json   # 強制：鎖檔在 client/，不加會導致部署失敗
 
       - name: Install and Build
         working-directory: client
