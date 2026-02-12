@@ -24,6 +24,7 @@ export default function VipPage() {
   const [passcode, setPasscode] = useState('');
   const [clinic, setClinic] = useState<ClinicDoc | null>(null);
   const [loading, setLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [subject, setSubject] = useState('');
   const [content, setContent] = useState('');
   const [audienceCount, setAudienceCount] = useState(0);
@@ -41,9 +42,38 @@ export default function VipPage() {
   };
 
   useEffect(() => {
-    if (!isUnlocked || !user || !db || !auth?.currentUser) return;
-    const uid = auth.currentUser.uid;
+    if (!isUnlocked || !user) return;
+    const uid = auth?.currentUser?.uid ?? user.uid;
+    setLoadError(null);
     setLoading(true);
+
+    const applyClinic = (c: ClinicDoc) => {
+      setClinic(c);
+      setOpenRate(62.4);
+      setLoading(false);
+    };
+
+    const failWithMock = (err: unknown) => {
+      console.warn('VIP clinic load failed, using mock:', err);
+      setLoadError(err instanceof Error ? err.message : '無法連線 Firestore');
+      applyClinic({
+        id: 'mock-vip',
+        name: 'VIP Clinic - ' + (user.displayName || user.email || 'User'),
+        ownerId: uid,
+        code: 'vip-' + uid.slice(0, 4),
+      });
+    };
+
+    if (!db) {
+      applyClinic({
+        id: 'mock-vip',
+        name: 'VIP Clinic - ' + (user.displayName || user.email || 'User'),
+        ownerId: uid,
+        code: 'vip-' + uid.slice(0, 4),
+      });
+      return;
+    }
+
     const clinicsRef = collection(db, 'clinics');
     getDocs(query(clinicsRef, where('ownerId', '==', uid)))
       .then((snap) => {
@@ -51,17 +81,20 @@ export default function VipPage() {
           const name = 'VIP Clinic - ' + (user.displayName || user.email || 'User');
           const code = 'vip-' + uid.slice(0, 4);
           return addDoc(clinicsRef, { name, ownerId: uid, code })
-            .then((ref) => ({ id: ref.id, name, ownerId: uid, code }));
+            .then((ref) => ({ id: ref.id, name, ownerId: uid, code }))
+            .catch((err) => { failWithMock(err); return null; });
         }
         const first = snap.docs[0];
         const d = first.data();
         return { id: first.id, name: d.name, ownerId: d.ownerId, code: d.code };
       })
       .then((c) => {
-        setClinic(c as ClinicDoc);
-        setOpenRate(62.4);
+        if (c) {
+          setClinic(c as ClinicDoc);
+          setOpenRate(62.4);
+        }
       })
-      .catch(() => setClinic(null))
+      .catch(failWithMock)
       .finally(() => setLoading(false));
   }, [isUnlocked, user]);
 
@@ -134,10 +167,20 @@ export default function VipPage() {
     );
   }
 
-  if (loading || !clinic) {
+  if (loading && !clinic) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-6" style={{ background: ZINC_950 }}>
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-4" style={{ background: ZINC_950 }}>
         <p className="font-mono text-sm" style={{ color: GOLD }}>LOADING ...</p>
+        <p className="font-mono text-xs opacity-70" style={{ color: ZINC_200 }}>正在開通診所</p>
+      </div>
+    );
+  }
+
+  if (!clinic) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 gap-4" style={{ background: ZINC_950 }}>
+        <p className="font-mono text-sm" style={{ color: '#ef4444' }}>無法載入診所</p>
+        {loadError && <p className="font-mono text-xs max-w-md text-center" style={{ color: ZINC_200 }}>{loadError}</p>}
       </div>
     );
   }
